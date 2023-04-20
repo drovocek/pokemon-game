@@ -1,47 +1,3 @@
-class Boundary {
-  static width = 48;
-  static height = 48;
-
-  constructor({ position }) {
-    this.position = position;
-    this.width = 48;
-    this.height = 48;
-  }
-
-  draw() {
-    context.fillStyle = "red";
-    context.fillRect(this.position.x, this.position.y, this.width, this.height);
-  }
-}
-
-class Sprite {
-  constructor({ position, velocity, image, frames = { max: 1 } }) {
-    this.position = position;
-    this.velocity = velocity;
-    this.image = image;
-    this.frames = frames;
-
-    this.image.onload = () => {
-      this.width = this.image.width / this.frames.max;
-      this.height = this.image.height;
-    };
-  }
-
-  draw() {
-    context.drawImage(
-      this.image,
-      0,
-      0,
-      this.image.width / this.frames.max,
-      this.image.height,
-      this.position.x,
-      this.position.y,
-      this.image.width / this.frames.max,
-      this.image.height
-    );
-  }
-}
-
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
     rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
@@ -70,17 +26,32 @@ context.fillRect(0, 0, canvas.width, canvas.height);
 const image = new Image();
 image.src = "./img/Pellet Town.png";
 
-const playerImage = new Image();
-playerImage.src = "./img/playerDown.png";
+const foregroundImage = new Image();
+foregroundImage.src = "./img/foregroundObjects.png";
+
+const playerUpImage = new Image();
+playerUpImage.src = "./img/playerUp.png";
+const playerRightImage = new Image();
+playerRightImage.src = "./img/playerRight.png";
+const playerDownImage = new Image();
+playerDownImage.src = "./img/playerDown.png";
+const playerLeftImage = new Image();
+playerLeftImage.src = "./img/playerLeft.png";
 
 const player = new Sprite({
   position: {
     x: canvas.width / 2 - 192 / 4 / 2,
     y: canvas.height / 2 - 68 / 2 + 20,
   },
-  image: playerImage,
+  image: playerDownImage,
   frames: {
     max: 4,
+  },
+  sprites: {
+    up: playerUpImage,
+    right: playerRightImage,
+    down: playerDownImage,
+    left: playerLeftImage,
   },
 });
 
@@ -90,6 +61,14 @@ const background = new Sprite({
     y: offset.y,
   },
   image: image,
+});
+
+const foreground = new Sprite({
+  position: {
+    x: offset.x + 432,
+    y: offset.y + 144,
+  },
+  image: foregroundImage,
 });
 
 const keys = {
@@ -178,6 +157,7 @@ window.onload = () => {
   });
 
   movables.push(...boundaries);
+  movables.push(foreground);
 
   animate();
 };
@@ -192,37 +172,56 @@ function animate() {
 
   player.draw();
 
+  foreground.draw();
+
   const step = 3;
+  player.moving = false;
   if (keys.w.pressed && lastKey === "w") {
     if (this.checkMoving(boundaries, player, "w")) {
+      player.moving = true;
+      player.image = player.sprites.up;
       movables.forEach((movable) => (movable.position.y += step));
     }
   } else if (keys.a.pressed && lastKey === "a") {
     if (this.checkMoving(boundaries, player, "a")) {
+      player.moving = true;
+      player.image = player.sprites.left;
       movables.forEach((movable) => (movable.position.x += step));
     }
   } else if (keys.s.pressed && lastKey === "s") {
     if (this.checkMoving(boundaries, player, "s")) {
+      player.moving = true;
+      player.image = player.sprites.down;
       movables.forEach((movable) => (movable.position.y -= step));
     }
   } else if (keys.d.pressed && lastKey === "d") {
     if (this.checkMoving(boundaries, player, "d")) {
+      player.moving = true;
+      player.image = player.sprites.right;
       movables.forEach((movable) => (movable.position.x -= step));
     }
   } else if (keys.w.pressed) {
     if (this.checkMoving(boundaries, player, "w")) {
+      player.moving = true;
+      player.image = player.sprites.up;
       movables.forEach((movable) => (movable.position.y += step));
     }
   } else if (keys.a.pressed) {
     if (this.checkMoving(boundaries, player, "a")) {
+      player.moving = true;
+      player.image = player.sprites.left;
       movables.forEach((movable) => (movable.position.x += step));
     }
   } else if (keys.s.pressed) {
     if (this.checkMoving(boundaries, player, "s")) {
+      player.moving = true;
+      player.image = player.sprites.down;
       movables.forEach((movable) => (movable.position.y -= step));
     }
   } else if (keys.d.pressed) {
     if (this.checkMoving(boundaries, player, "d")) {
+      player.moving = true;
+      player.image = player.sprites.right;
       movables.forEach((movable) => (movable.position.x -= step));
     }
   }
