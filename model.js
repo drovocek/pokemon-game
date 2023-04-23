@@ -9,7 +9,7 @@ class Boundary {
   }
 
   draw() {
-    context.fillStyle = "rgba(255,0,0,0.0)";
+    context.fillStyle = "rgba(255,0,0,0.5)";
     context.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 }
@@ -43,7 +43,6 @@ class Sprite {
       this.image.height
     );
 
-    console.log(this.moving);
     if (!this.moving) return;
 
     if (this.frames.max > 1) {
