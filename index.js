@@ -83,6 +83,39 @@ const background = new Sprite({
   image: image,
 });
 
+const draggleImage = new Image();
+draggleImage.src = "./img/draggleSprite.png";
+
+const draggle = new Sprite({
+  position: {
+    x: 795,
+    y: 100,
+  },
+  image: draggleImage,
+  frames: {
+    max: 4,
+    hold: 30,
+  },
+  animate: true,
+  isEnemy: true,
+});
+
+const embyImage = new Image();
+embyImage.src = "./img/embySprite.png";
+
+const emby = new Sprite({
+  position: {
+    x: 280,
+    y: 325,
+  },
+  image: embyImage,
+  frames: {
+    max: 4,
+    hold: 30,
+  },
+  animate: true,
+});
+
 const battle = {
   initiated: false,
 };
@@ -153,6 +186,7 @@ const battleZonesMap = [];
 const boundaries = [];
 const battleZones = [];
 const movables = [background];
+const renderedSprites = [battleBackground, draggle, emby];
 
 window.onload = () => {
   for (let i = 0; i < collisions.length; i += 70) {
@@ -202,11 +236,11 @@ window.onload = () => {
 
   document.querySelectorAll("button").forEach((button) =>
     button.addEventListener("click", (e) => {
-    const currentAttack = attacks[e.currentTarget.innerHTML];
-    console.log(currentAttack)
+      const currentAttack = attacks[e.currentTarget.innerHTML];
       emby.attack({
         attack: currentAttack,
-        recipient: draggle
+        recipient: draggle,
+        renderedSprites:renderedSprites
       });
     })
   );
@@ -368,43 +402,9 @@ function checkBattle(battleZones, rectangle1) {
   return false;
 }
 
-const draggleImage = new Image();
-draggleImage.src = "./img/draggleSprite.png";
-
-const draggle = new Sprite({
-  position: {
-    x: 795,
-    y: 100,
-  },
-  image: draggleImage,
-  frames: {
-    max: 4,
-    hold: 30,
-  },
-  animate: true,
-  isEnemy: true
-});
-
-const embyImage = new Image();
-embyImage.src = "./img/embySprite.png";
-
-const emby = new Sprite({
-  position: {
-    x: 280,
-    y: 325,
-  },
-  image: embyImage,
-  frames: {
-    max: 4,
-    hold: 30,
-  },
-  animate: true,
-});
 
 function animateBattle() {
   window.requestAnimationFrame(animateBattle);
   console.log("batle animation");
-  battleBackground.draw();
-  draggle.draw();
-  emby.draw();
+  renderedSprites.forEach((sprite) => sprite.draw());
 }
