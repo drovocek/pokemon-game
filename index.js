@@ -29,6 +29,9 @@ image.src = "./img/Pellet Town.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./img/foregroundObjects.png";
 
+const battleBackgroundImage = new Image();
+battleBackgroundImage.src = "./img/battleBackground.png";
+
 const playerUpImage = new Image();
 playerUpImage.src = "./img/playerUp.png";
 const playerRightImage = new Image();
@@ -46,6 +49,7 @@ const player = new Sprite({
   image: playerDownImage,
   frames: {
     max: 4,
+    hold: 10,
   },
   sprites: {
     up: playerUpImage,
@@ -55,12 +59,12 @@ const player = new Sprite({
   },
 });
 
-const background = new Sprite({
+const battleBackground = new Sprite({
   position: {
-    x: offset.x,
-    y: offset.y,
+    x: offset.x + 738,
+    y: offset.y + 600,
   },
-  image: image,
+  image: battleBackgroundImage,
 });
 
 const foreground = new Sprite({
@@ -69,6 +73,14 @@ const foreground = new Sprite({
     y: offset.y + 144,
   },
   image: foregroundImage,
+});
+
+const background = new Sprite({
+  position: {
+    x: offset.x,
+    y: offset.y,
+  },
+  image: image,
 });
 
 const battle = {
@@ -185,18 +197,23 @@ window.onload = () => {
   movables.push(...battleZones);
   movables.push(foreground);
 
-  animate();
+  animateBattle();
+  //animate();
 
-  console.log(document.getElementById("overlapping"));
-  gsap.to("#overlapping", {
-    opacity: 0.5,
-    repeat: 3,
-    yoyo: true,
-  });
+  document.querySelectorAll("button").forEach((button) =>
+    button.addEventListener("click", (e) => {
+    const currentAttack = attacks[e.currentTarget.innerHTML];
+    console.log(currentAttack)
+      emby.attack({
+        attack: currentAttack,
+        recipient: draggle
+      });
+    })
+  );
 };
 
 function animate() {
-  window.requestAnimationFrame(this.animate);
+  const animationId = window.requestAnimationFrame(this.animate);
   background.draw();
 
   battleZones.forEach((boundary) => boundary.draw());
@@ -207,61 +224,83 @@ function animate() {
   foreground.draw();
 
   if (battle.initiated) {
-    player.moving = false;
+    player.animate = false;
     return;
   }
 
   if (keys.w.pressed || keys.a.pressed || keys.d.pressed || keys.s.pressed) {
     battle.initiated = this.checkBattle(battleZones, player);
+    if (battle.initiated) {
+      window.cancelAnimationFrame(animationId);
+      gsap.to("#overlapping", {
+        opacity: 1,
+        repeat: 3,
+        yoyo: true,
+        duration: 0.4,
+        onComplete() {
+          gsap.to("#overlapping", {
+            opacity: 1,
+            duration: 0.4,
+            onComplete() {
+              animateBattle();
+              gsap.to("#overlapping", {
+                opacity: 0,
+                duration: 0.4,
+              });
+            },
+          });
+        },
+      });
+    }
   }
 
   const step = 3;
-  player.moving = false;
+  player.animate = false;
   if (keys.w.pressed && lastKey === "w") {
     if (this.checkMoving(boundaries, player, "w")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.up;
       movables.forEach((movable) => (movable.position.y += step));
     }
   } else if (keys.a.pressed && lastKey === "a") {
     if (this.checkMoving(boundaries, player, "a")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.left;
       movables.forEach((movable) => (movable.position.x += step));
     }
   } else if (keys.s.pressed && lastKey === "s") {
     if (this.checkMoving(boundaries, player, "s")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.down;
       movables.forEach((movable) => (movable.position.y -= step));
     }
   } else if (keys.d.pressed && lastKey === "d") {
     if (this.checkMoving(boundaries, player, "d")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.right;
       movables.forEach((movable) => (movable.position.x -= step));
     }
   } else if (keys.w.pressed) {
     if (this.checkMoving(boundaries, player, "w")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.up;
       movables.forEach((movable) => (movable.position.y += step));
     }
   } else if (keys.a.pressed) {
     if (this.checkMoving(boundaries, player, "a")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.left;
       movables.forEach((movable) => (movable.position.x += step));
     }
   } else if (keys.s.pressed) {
     if (this.checkMoving(boundaries, player, "s")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.down;
       movables.forEach((movable) => (movable.position.y -= step));
     }
   } else if (keys.d.pressed) {
     if (this.checkMoving(boundaries, player, "d")) {
-      player.moving = true;
+      player.animate = true;
       player.image = player.sprites.right;
       movables.forEach((movable) => (movable.position.x -= step));
     }
@@ -327,4 +366,45 @@ function checkBattle(battleZones, rectangle1) {
     }
   }
   return false;
+}
+
+const draggleImage = new Image();
+draggleImage.src = "./img/draggleSprite.png";
+
+const draggle = new Sprite({
+  position: {
+    x: 795,
+    y: 100,
+  },
+  image: draggleImage,
+  frames: {
+    max: 4,
+    hold: 30,
+  },
+  animate: true,
+  isEnemy: true
+});
+
+const embyImage = new Image();
+embyImage.src = "./img/embySprite.png";
+
+const emby = new Sprite({
+  position: {
+    x: 280,
+    y: 325,
+  },
+  image: embyImage,
+  frames: {
+    max: 4,
+    hold: 30,
+  },
+  animate: true,
+});
+
+function animateBattle() {
+  window.requestAnimationFrame(animateBattle);
+  console.log("batle animation");
+  battleBackground.draw();
+  draggle.draw();
+  emby.draw();
 }

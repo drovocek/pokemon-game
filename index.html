@@ -1,6 +1,30 @@
 <div id="overlappingWrapper" class="overlapping-wrapper">
   <div id="overlapping" class="overlapping"></div>
+  <div class="info-panel">
+    <h1 class="info-panel__title">Draggle</h1>
+    <div class="health-wrapper">
+      <div class="health-background"></div>
+      <div id="enemyHealthBar" class="health"></div>
+    </div>
+  </div>
+  <div class="info-panel emby">
+    <h1 class="info-panel__title">Emby</h1>
+    <div class="health-wrapper">
+      <div class="health-background"></div>
+      <div id="playerHealthBar" class="health"></div>
+    </div>
+  </div>
   <canvas></canvas>
+
+  <div id="actionPanel" class="action-panel">
+    <div class="action-panel__buttons">
+      <button>Tackle</button>
+      <button>Fireball</button>
+    </div>
+    <div class="action-panel__title">
+      <h1>Atack type</h1>
+    </div>
+  </div>
 </div>
 
 <script
@@ -12,6 +36,14 @@
 
 <script src="./data/battleZones.js"></script>
 <script src="./data/collisions.js"></script>
+<script src="./data/attacks.js"></script>
 <script src="model.js"></script>
 <script src="index.js"></script>
+
 <link rel="stylesheet" href="css/main.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Press+Start+2P&display=swap"
+  rel="stylesheet"
+/>
