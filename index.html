@@ -1,44 +1,60 @@
-<div id="overlappingWrapper" class="overlapping-wrapper">
-  <div id="overlapping" class="overlapping"></div>
-  <div class="info-panel">
-    <h1 class="info-panel__title">Draggle</h1>
-    <div class="health-wrapper">
-      <div class="health-background"></div>
-      <div id="enemyHealthBar" class="health"></div>
-    </div>
-  </div>
-  <div class="info-panel emby">
-    <h1 class="info-panel__title">Emby</h1>
-    <div class="health-wrapper">
-      <div class="health-background"></div>
-      <div id="playerHealthBar" class="health"></div>
-    </div>
-  </div>
+<div class="overlapping-wrapper">
+  <div id="overlappingDiv" class="overlapping-div"></div>
+
   <canvas></canvas>
 
-  <div id="actionPanel" class="action-panel">
-    <div class="action-panel__buttons">
-      <button>Tackle</button>
-      <button>Fireball</button>
+  <div id="characterDialogueBox" class="character-dialogue-box"></div>
+
+  <div id="userInterface" style="display: none">
+    <!-- Represents health bar of draggle (enemy) -->
+    <div class="health-bar-wrapper">
+      <h1 class="health-bar-name">Draggle</h1>
+      <div style="position: relative">
+        <div class="health-bar-background"></div>
+        <div id="enemyHealthBar" class="health-bar-foreground"></div>
+      </div>
     </div>
-    <div class="action-panel__title">
-      <h1>Atack type</h1>
+
+    <!-- Represents health bar of emby (us) -->
+    <div class="health-bar-wrapper-emby">
+      <h1 class="health-bar-name">Emby</h1>
+      <div style="position: relative">
+        <div class="health-bar-background"></div>
+        <div id="playerHealthBar" class="health-bar-foreground"></div>
+      </div>
+    </div>
+
+    <div class="action-panel-wrapper">
+      <div id="dialogueBox" class="dialog-box">sdkfjlsdajl</div>
+      <div id="attacksBox" class="attack-box"></div>
+      <div class="attack-info">
+        <h1 id="attackType" class="attack-info-title">Attack Type</h1>
+      </div>
     </div>
   </div>
 </div>
 
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
+  integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
   integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
   crossorigin="anonymous"
   referrerpolicy="no-referrer"
 ></script>
-
+<script src="./data/audio.js"></script>
+<script src="./data/util.js"></script>
 <script src="./data/battleZones.js"></script>
 <script src="./data/collisions.js"></script>
 <script src="./data/attacks.js"></script>
+<script src="./data/monsters.js"></script>
 <script src="model.js"></script>
 <script src="index.js"></script>
+<script src="battleScene.js"></script>
 
 <link rel="stylesheet" href="css/main.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />

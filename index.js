@@ -29,9 +29,6 @@ image.src = "./img/Pellet Town.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./img/foregroundObjects.png";
 
-const battleBackgroundImage = new Image();
-battleBackgroundImage.src = "./img/battleBackground.png";
-
 const playerUpImage = new Image();
 playerUpImage.src = "./img/playerUp.png";
 const playerRightImage = new Image();
@@ -59,14 +56,6 @@ const player = new Sprite({
   },
 });
 
-const battleBackground = new Sprite({
-  position: {
-    x: offset.x + 738,
-    y: offset.y + 600,
-  },
-  image: battleBackgroundImage,
-});
-
 const foreground = new Sprite({
   position: {
     x: offset.x + 432,
@@ -82,43 +71,6 @@ const background = new Sprite({
   },
   image: image,
 });
-
-const draggleImage = new Image();
-draggleImage.src = "./img/draggleSprite.png";
-
-const draggle = new Sprite({
-  position: {
-    x: 795,
-    y: 100,
-  },
-  image: draggleImage,
-  frames: {
-    max: 4,
-    hold: 30,
-  },
-  animate: true,
-  isEnemy: true,
-});
-
-const embyImage = new Image();
-embyImage.src = "./img/embySprite.png";
-
-const emby = new Sprite({
-  position: {
-    x: 280,
-    y: 325,
-  },
-  image: embyImage,
-  frames: {
-    max: 4,
-    hold: 30,
-  },
-  animate: true,
-});
-
-const battle = {
-  initiated: false,
-};
 
 const keys = {
   w: {
@@ -186,9 +138,13 @@ const battleZonesMap = [];
 const boundaries = [];
 const battleZones = [];
 const movables = [background];
-const renderedSprites = [battleBackground, draggle, emby];
+const battle = {
+  initiated: false,
+};
 
 window.onload = () => {
+  console.log("load");
+
   for (let i = 0; i < collisions.length; i += 70) {
     collisionsMap.push(collisions.slice(i, i + 70));
   }
@@ -231,22 +187,19 @@ window.onload = () => {
   movables.push(...battleZones);
   movables.push(foreground);
 
-  animateBattle();
-  //animate();
-
-  document.querySelectorAll("button").forEach((button) =>
-    button.addEventListener("click", (e) => {
-      const currentAttack = attacks[e.currentTarget.innerHTML];
-      emby.attack({
-        attack: currentAttack,
-        recipient: draggle,
-        renderedSprites:renderedSprites
-      });
-    })
-  );
+  animate();
 };
 
+let clicked = false;
+window.addEventListener("click", (e) => {
+  if (!clicked) {
+    clicked = true;
+    audio.Map.play();
+  }
+});
+
 function animate() {
+  console.log("animate");
   const animationId = window.requestAnimationFrame(this.animate);
   background.draw();
 
@@ -264,20 +217,25 @@ function animate() {
 
   if (keys.w.pressed || keys.a.pressed || keys.d.pressed || keys.s.pressed) {
     battle.initiated = this.checkBattle(battleZones, player);
+    
     if (battle.initiated) {
+      audio.Map.stop();
+      audio.initBattle.play();
       window.cancelAnimationFrame(animationId);
-      gsap.to("#overlapping", {
+
+      gsap.to("#overlappingDiv", {
         opacity: 1,
         repeat: 3,
         yoyo: true,
         duration: 0.4,
         onComplete() {
-          gsap.to("#overlapping", {
+          gsap.to("#overlappingDiv", {
             opacity: 1,
             duration: 0.4,
             onComplete() {
+              initBattle();
               animateBattle();
-              gsap.to("#overlapping", {
+              gsap.to("#overlappingDiv", {
                 opacity: 0,
                 duration: 0.4,
               });
@@ -285,6 +243,8 @@ function animate() {
           });
         },
       });
+
+      audio.battle.play();
     }
   }
 
@@ -395,16 +355,8 @@ function checkBattle(battleZones, rectangle1) {
       overlappingArea > (player.width * player.height) / 2 &&
       Math.random() < 0.01
     ) {
-      console.log("battle");
       return true;
     }
   }
   return false;
-}
-
-
-function animateBattle() {
-  window.requestAnimationFrame(animateBattle);
-  console.log("batle animation");
-  renderedSprites.forEach((sprite) => sprite.draw());
 }

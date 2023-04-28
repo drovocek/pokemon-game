@@ -22,24 +22,21 @@ class Sprite {
     frames = { max: 1, hold: 10 },
     sprites,
     animate = false,
-    isEnemy = false,
     rotation = 0,
   }) {
+    this.opacity = 1;
+
     this.position = position;
     this.velocity = velocity;
-    this.image = image;
     this.frames = { ...frames, val: 0, ellapsed: 0 };
-
+    this.image = new Image();
     this.image.onload = () => {
       this.width = this.image.width / this.frames.max;
       this.height = this.image.height;
     };
-
+    this.image.src = image.src;
     this.animate = animate;
     this.sprites = sprites;
-    this.opacity = 1;
-    this.health = 100;
-    this.isEnemy = isEnemy;
     this.rotation = rotation;
   }
 
@@ -86,9 +83,56 @@ class Sprite {
       }
     }
   }
+}
+
+class Monster extends Sprite {
+  constructor({
+    position,
+    velocity,
+    image,
+    frames = { max: 1, hold: 10 },
+    sprites,
+    animate = false,
+    rotation = 0,
+    name,
+    isEnemy = false,
+    attacks = [],
+  }) {
+    super({
+      position,
+      velocity,
+      image,
+      frames,
+      sprites,
+      animate,
+      rotation,
+    });
+    this.health = 100;
+
+    this.isEnemy = isEnemy;
+    this.name = name;
+    this.attacks = attacks;
+  }
+
+  faint() {
+    const dialogueBox = document.querySelector("#dialogueBox");
+    dialogueBox.innerHTML = `${this.name} fainted!`;
+
+    gsap.to(this.position, {
+      y: this.position.y + 20,
+    });
+
+    gsap.to(this, {
+      opacity: 0,
+    });
+  }
 
   attack({ attack, recipient, renderedSprites }) {
-    this.health -= attack.damage;
+    const dialogueBox = document.querySelector("#dialogueBox");
+    dialogueBox.style.display = "block";
+    dialogueBox.innerHTML = `${this.name} used ${attack.name}`;
+
+    recipient.health -= attack.damage;
 
     let healthBar = "#enemyHealthBar";
     if (this.isEnemy) {
@@ -122,7 +166,7 @@ class Sprite {
         duration: 0.1,
         onComplete: () => {
           gsap.to(healthBar, {
-            width: this.health + "%",
+            width: recipient.health + "%",
           });
 
           gsap.to(recipient.position, {
@@ -143,12 +187,16 @@ class Sprite {
       .to(this.position, {
         x: this.position.x,
       });
+
+      audio.tackleHit.play();
   }
 
   fireballAttack({ recipient, healthBar, renderedSprites }) {
+    audio.initFireball.play();
+
     let rotation = 1;
     if (this.isEnemy) {
-      rotation = -1;
+      rotation = -2.2;
     }
     const fireballImage = new Image();
     fireballImage.src = "./img/fireball.png";
@@ -172,8 +220,10 @@ class Sprite {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
+        audio.fireballHit.play();
+        
         gsap.to(healthBar, {
-          width: this.health + "%",
+          width: recipient.health + "%",
         });
 
         gsap.to(recipient.position, {
